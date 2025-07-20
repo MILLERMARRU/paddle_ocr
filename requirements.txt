@@ -1,6 +1,6 @@
 streamlit
 paddleocr
 paddlepaddle
-python-docx
 opencv-python
-Pillow
+pyngrok
+python-docx
