@@ -1,5 +1,3 @@
-# app.py
-
 from paddleocr import PaddleOCR
 from PIL import Image, UnidentifiedImageError
 import streamlit as st
@@ -11,9 +9,9 @@ import os
 @st.cache_resource
 def load_ocr():
     return PaddleOCR(
-        use_doc_orientation_classify=False,
-        use_doc_unwarping=False,
-        use_textline_orientation=False
+        use_angle_cls=False,  # evita errores con clasificadores
+        use_space_char=True,  # mejora reconocimiento de espacios
+        lang='es'             # cambia a 'en' si prefieres inglés
     )
 
 def generar_docx(texto):
@@ -46,13 +44,12 @@ if uploaded_file:
             image.save("input.jpg")
 
             with st.spinner("🔍 Procesando imagen..."):
-                result = ocr.predict(input="input.jpg")[0]
+                result = ocr.ocr("input.jpg", cls=False)
 
-            textos_detectados = result['rec_texts']
-            result.save_to_img("resultado_ocr.jpg")
+            textos_detectados = [line[1][0] for line in result[0]]
 
             with col1:
-                st.image("resultado_ocr.jpg", caption="🖼️ Imagen con cuadros", use_container_width=True)
+                st.image("input.jpg", caption="🖼️ Imagen procesada", use_container_width=True)
 
             with col2:
                 st.markdown("📝 **Texto reconocido (editable)**")
