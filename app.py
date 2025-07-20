@@ -10,7 +10,6 @@ import os
 def load_ocr():
     return PaddleOCR(
         use_angle_cls=False,  # evita errores con clasificadores
-        use_space_char=True,  # mejora reconocimiento de espacios
         lang='es'             # cambia a 'en' si prefieres inglés
     )
 
