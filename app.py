@@ -1,4 +1,4 @@
-from paddleocr import PaddleOCR
+from paddleocr import PaddleOCR, draw_ocr
 from PIL import Image, UnidentifiedImageError
 import streamlit as st
 import numpy as np
@@ -8,10 +8,7 @@ import os
 
 @st.cache_resource
 def load_ocr():
-    return PaddleOCR(
-        use_angle_cls=False,  # evita errores con clasificadores
-        lang='es'             # cambia a 'en' si prefieres inglés
-    )
+    return PaddleOCR(use_angle_cls=False, lang='es')
 
 def generar_docx(texto):
     doc = Document()
@@ -28,6 +25,11 @@ st.title("📄 OCR con PaddleOCR")
 
 if "descargado" not in st.session_state:
     st.session_state.descargado = False
+
+# Si ya se descargó y se quiere volver a empezar
+if st.session_state.descargado:
+    st.session_state.descargado = False
+    st.experimental_rerun()
 
 uploaded_file = st.file_uploader("📤 Sube una imagen", type=["png", "jpg", "jpeg"])
 
@@ -57,26 +59,19 @@ if uploaded_file:
 
                 buffer = generar_docx(texto_editado)
 
-                downloaded = st.download_button(
+                if st.download_button(
                     label="📥 Descargar como .docx",
                     data=buffer,
                     file_name="resultado_ocr.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-
-                if downloaded:
-                    st.success("✅ Documento descargado. Reinicia para procesar otra imagen.")
+                ):
                     st.session_state.descargado = True
-                    st.experimental_rerun()
+                    st.success("✅ Documento descargado. Reiniciando...")
+                    st.stop()  # Detiene la ejecución actual, espera al próximo ciclo
 
     except UnidentifiedImageError:
         st.error("❌ La imagen no pudo ser reconocida. Asegúrate de subir un archivo válido.")
     except Exception as e:
         st.error(f"❌ Error procesando la imagen.\n\n{e}")
-
 else:
     st.info("👆 Por favor, sube una imagen para empezar.")
-
-if st.session_state.descargado:
-    st.session_state.clear()
-    st.experimental_rerun()
