@@ -1,6 +1,7 @@
 paddleocr
 paddlepaddle
+opencv-python-headless
 streamlit
 pyngrok
-opencv-python-headless
 python-docx
+setuptools
