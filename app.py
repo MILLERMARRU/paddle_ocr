@@ -43,7 +43,8 @@ if uploaded_file:
             image.save("input.jpg")
 
             with st.spinner("🔍 Procesando imagen..."):
-                result = ocr.ocr("input.jpg", cls=False)
+                result = ocr.ocr("input.jpg")
+
 
             textos_detectados = [line[1][0] for line in result[0]]
 
