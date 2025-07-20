@@ -6,7 +6,7 @@ from docx import Document
 from io import BytesIO
 import os
 
-@st.cache_resource
+# 🔧 Carga OCR sin usar @st.cache_resource para evitar errores de serialización
 def load_ocr():
     return PaddleOCR(
         use_angle_cls=False,  # evita errores con clasificadores
@@ -21,8 +21,10 @@ def generar_docx(texto):
     buffer.seek(0)
     return buffer
 
+# ⚙️ Inicializa OCR
 ocr = load_ocr()
 
+# 🧾 Configura Streamlit
 st.set_page_config(page_title="OCR con PaddleOCR", layout="wide")
 st.title("📄 OCR con PaddleOCR")
 
@@ -45,6 +47,10 @@ if uploaded_file:
             with st.spinner("🔍 Procesando imagen..."):
                 result = ocr.ocr("input.jpg")
 
+            # ✅ Verifica si se detectó texto
+            if not result or not result[0]:
+                st.warning("🔍 No se detectó texto en la imagen.")
+                st.stop()
 
             textos_detectados = [line[1][0] for line in result[0]]
 
